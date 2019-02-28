@@ -3,35 +3,25 @@ defmodule WubookAPI do
   Wubook API implementation
   """
   alias WubookAPI.Authentication
-  alias WubookAPI.Error
-  alias WubookAPI.Token
+  alias WubookAPI.Rooms
+  alias WubookAPI.Availability
 
-  @authentication_failed -1
+  defdelegate acquire_token(user, password, provider_key, lcode), to: Authentication
+  defdelegate release_token(token), to: Authentication
+  defdelegate is_token_valid(token), to: Authentication
+  defdelegate provider_info(token), to: Authentication
 
-  def new(args) do
-    %{user: user, password: password, lcode: lcode, provider_key: provider_key} = Enum.into(args, %{})
+  defdelegate fetch_rooms(token, ancillary \\ 0), to: Rooms
+  defdelegate new_room(token, args), to: Rooms
+  defdelegate new_virtual_room(token, args), to: Rooms
+  defdelegate mod_room(token, args), to: Rooms
+  defdelegate mod_virtual_room(token, args), to: Rooms
+  defdelegate del_room(token, rid), to: Rooms
+  defdelegate room_images(token, rid), to: Rooms
+  defdelegate push_update_activation(token, url), to: Rooms
+  defdelegate push_update_url(token), to: Rooms
 
-    with {:ok, %{token: token}} <- Authentication.acquire_token(user, password, provider_key) do
-      {:ok,
-       %Token{
-         user: user,
-         password: password,
-         provider_key: provider_key,
-         lcode: lcode,
-         token: token
-       }}
-    else
-      {:error, error} ->
-        {:error, error}
-    end
-  end
-
-  def new!(args) do
-    with {:ok, token} <- new(args) do
-      token
-    else
-      {:error, _} ->
-        raise Error, @authentication_failed
-    end
-  end
+  defdelegate update_avail(token, dfrom, rooms), to: Availability
+  defdelegate update_sparse_avail(token, rooms), to: Availability
+  defdelegate fetch_rooms_values(token, dfrom, dto, rooms \\ []), to: Availability
 end

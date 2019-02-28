@@ -30,6 +30,7 @@ defmodule WubookAPI.Query do
   Send query to target API endpoint
   """
   def send_query({:ok, request_body}) do
+    IO.inspect(request_body)
     HTTPoison.post(
       Application.get_env(:wubook_api, :api_endpoint),
       request_body

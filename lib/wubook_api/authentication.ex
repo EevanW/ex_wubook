@@ -8,11 +8,16 @@ defmodule WubookAPI.Authentication do
   @doc """
   Get new token from Wubook
   """
-  @spec acquire_token(String.t(), String.t(), String.t()) :: {:ok, %{token: String.t()}} | {:error, any()}
-  def acquire_token(user, password, provider_key) do
+  @spec acquire_token(String.t(), String.t(), String.t(), integer()) ::
+          {:ok, %{token: %Token{}}} | {:error, any()}
+  def acquire_token(user, password, provider_key, lcode) do
     with {:ok, [token]} <- Query.send("acquire_token", [user, password, provider_key]) do
       {:ok,
-       %{
+       %Token{
+         user: user,
+         password: password,
+         provider_key: provider_key,
+         lcode: lcode,
          token: token
        }}
     end
@@ -31,7 +36,8 @@ defmodule WubookAPI.Authentication do
   @doc """
   Check token health
   """
-  @spec is_token_valid(%Token{}) :: {:ok, %{is_valid: true, count_of_usage: integer}} | {:error, any()}
+  @spec is_token_valid(%Token{}) ::
+          {:ok, %{is_valid: true, count_of_usage: integer}} | {:error, any()}
   def is_token_valid(%Token{token: token}) do
     with {:ok, [count_of_usage]} <- Query.send("is_token_valid", [token]) do
       {:ok,

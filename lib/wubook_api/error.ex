@@ -29,6 +29,7 @@ defmodule WubookAPI.Error do
   def reason_for(-13), do: :wrong_call
   def reason_for(-14), do: :wrong_number_of_days
   def reason_for(-15), do: :plan_in_use
+  def reason_for(-19), do: :past_date
   def reason_for(-100), do: :invalid_input
   def reason_for(-101), do: :malformed_dates_or_restrictions
   def reason_for(-1000), do: :invalid_lodging_code
@@ -88,6 +89,9 @@ defmodule WubookAPI.Error do
 
   def humanize_error(:plan_in_use),
     do: "This plan is actually in use"
+
+  def humanize_error(:past_date),
+    do: "Invalid date: past date"
 
   def humanize_error(:invalid_input),
     do: "Invalid Input"
