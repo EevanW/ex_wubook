@@ -6,4 +6,5 @@ defmodule WubookAPI do
   use WubookAPI.Rooms
   use WubookAPI.Availability
   use WubookAPI.Prices
+  use WubookAPI.Restrictions
 end
