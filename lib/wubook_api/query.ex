@@ -3,12 +3,14 @@ defmodule WubookAPI.Query do
   API Query module
   """
   alias WubookAPI.Error
+  require Logger
 
   @doc """
   Make query to API endpoint
   """
   @spec send(String.t(), list) :: {:ok, list} | {:error, any()}
   def send(method_name, params) do
+    Logger.info("API CALL TO: #{method_name}")
     %XMLRPC.MethodCall{method_name: method_name, params: params}
     |> encode_request()
     |> send_query()
@@ -30,6 +32,7 @@ defmodule WubookAPI.Query do
   Send query to target API endpoint
   """
   def send_query({:ok, request_body}) do
+    Logger.info("REQUEST BODY: #{request_body}")
     HTTPoison.post(
       Application.get_env(:wubook_api, :api_endpoint),
       request_body
@@ -42,6 +45,7 @@ defmodule WubookAPI.Query do
   Decode query result
   """
   def decode_response({:ok, %{status_code: 200, body: body}}) do
+    Logger.info("ANSWER BODY: #{body}")
     XMLRPC.decode(body)
   end
 

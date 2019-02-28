@@ -13,7 +13,7 @@ defmodule WubookAPI.MixProject do
 
   def application do
     [
-      applications: [:httpoison]
+      applications: [:logger, :httpoison]
     ]
   end
 
