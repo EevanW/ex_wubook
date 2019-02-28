@@ -10,7 +10,6 @@ defmodule WubookAPI.Authentication do
       @doc """
       Get new token from Wubook
       """
-      @deprecated "Use sss instead"
       @spec acquire_token(String.t(), String.t(), String.t(), integer()) ::
               {:ok, %{token: %Token{}}} | {:error, any()}
       def acquire_token(user, password, provider_key, lcode) do
