@@ -20,6 +20,6 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-wubook_api-*.tar
+ex_wubook-*.tar
 
 /.elixir_ls

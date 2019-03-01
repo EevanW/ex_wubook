@@ -1,4 +1,4 @@
-defmodule WubookAPI.Token do
+defmodule ExWubook.Token do
   defstruct user: nil,
             password: nil,
             provider_key: nil,

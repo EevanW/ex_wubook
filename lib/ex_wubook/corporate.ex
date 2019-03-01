@@ -1,9 +1,9 @@
-defmodule WubookAPI.Corporate do
+defmodule ExWubook.Corporate do
   @moduledoc """
   API Methods for Corporate operations
   """
-  alias WubookAPI.Token
-  alias WubookAPI.Query
+  alias ExWubook.Token
+  alias ExWubook.Query
 
   defmacro __using__(_) do
     quote do

@@ -1,9 +1,9 @@
-defmodule WubookAPI.Authentication do
+defmodule ExWubook.Authentication do
   @moduledoc """
   API Methods for Authentication operations
   """
-  alias WubookAPI.Token
-  alias WubookAPI.Query
+  alias ExWubook.Token
+  alias ExWubook.Query
 
   defmacro __using__(_) do
     quote do

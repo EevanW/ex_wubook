@@ -1,4 +1,4 @@
-defmodule WubookAPI.Error do
+defmodule ExWubook.Error do
   defexception [:reason]
   @type t :: %__MODULE__{reason: any}
 

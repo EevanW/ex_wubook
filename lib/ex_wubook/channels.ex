@@ -1,9 +1,9 @@
-defmodule WubookAPI.Channels do
+defmodule ExWubook.Channels do
   @moduledoc """
   API Methods for Channel operations
   """
-  alias WubookAPI.Token
-  alias WubookAPI.Query
+  alias ExWubook.Token
+  alias ExWubook.Query
 
   defmacro __using__(_) do
     quote do
