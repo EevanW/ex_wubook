@@ -3,23 +3,76 @@ defmodule WubookAPI.Policies do
   API Methods for Policy operations
   """
   alias WubookAPI.Token
-  # alias WubookAPI.Query
+  alias WubookAPI.Query
 
-  def fetch_policies(%Token{token: _token, lcode: _lcode}, _args) do
-  end
+  defmacro __using__(_) do
+    quote do
+      @spec fetch_policies(%Token{}, 0 | 1 | nil) :: {:ok, any()} | {:error, any()}
+      def fetch_policies(%Token{token: token, lcode: lcode}, ancillary \\ 0) do
+        with {:ok, [response]} <- Query.send("fetch_policies", [token, lcode, ancillary]) do
+          {:ok, response}
+        end
+      end
 
-  def new_policy(%Token{token: _token, lcode: _lcode}, _args) do
-  end
+      @spec new_policy(%Token{}, map()) :: {:ok, any()} | {:error, any()}
+      def new_policy(%Token{token: token, lcode: lcode}, args) do
+        with {:ok, [response]} <-
+          Query.send("new_policy", [
+            token,
+            lcode,
+            # Required arguments
+            args[:name] || nil,
+            args[:pshow] || nil,
+            args[:ptype] || nil,
+            # Optional arguments
+            args[:value] || nil,
+            args[:days] || nil,
+            args[:descrs] || nil
+          ]) do
+          {:ok, response}
+        end
+      end
 
-  def mod_policy(%Token{token: _token, lcode: _lcode}, _args) do
-  end
+      @spec mod_policy(%Token{}, integer(), map()) :: {:ok, any()} | {:error, any()}
+      def mod_policy(%Token{token: token, lcode: lcode}, pid, args) do
+        with {:ok, [response]} <-
+          Query.send("mod_policy", [
+            token,
+            lcode,
+            pid,
+            # Required arguments
+            args[:name] || nil,
+            args[:pshow] || nil,
+            args[:ptype] || nil,
+            # Optional arguments
+            args[:value] || nil,
+            args[:days] || nil,
+            args[:descrs] || nil
+          ]) do
+          {:ok, response}
+        end
+      end
 
-  def del_policy(%Token{token: _token, lcode: _lcode}, _args) do
-  end
+      @spec del_policy(%Token{}, integer()) :: {:ok, any()} | {:error, any()}
+      def del_policy(%Token{token: token, lcode: lcode}, pid) do
+        with {:ok, [response]} <- Query.send("del_policy", [token, lcode, pid]) do
+          {:ok, response}
+        end
+      end
 
-  def fetch_policy_calendar(%Token{token: _token, lcode: _lcode}, _args) do
-  end
+      @spec fetch_policy_calendar(%Token{}, Date.t(), Date.t()) :: {:ok, any()} | {:error, any()}
+      def fetch_policy_calendar(%Token{token: token, lcode: lcode}, dfrom, dto) do
+        with {:ok, [response]} <- Query.send("fetch_policy_calendar", [token, lcode, dfrom, dto]) do
+          {:ok, response}
+        end
+      end
 
-  def set_policy_calendar(%Token{token: _token, lcode: _lcode}, _args) do
+      @spec set_policy_calendar(%Token{}, integer(), Date.t(), Date.t()) :: {:ok, any()} | {:error, any()}
+      def set_policy_calendar(%Token{token: token, lcode: lcode}, pid, dfrom, dto) do
+        with {:ok, [response]} <- Query.send("set_policy_calendar", [token, lcode, pid, dfrom, dto]) do
+          {:ok, response}
+        end
+      end
+    end
   end
 end

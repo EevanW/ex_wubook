@@ -55,8 +55,12 @@ defmodule WubookAPI.Query do
   @doc """
   Extract response arguments from XMLRPC structure
   """
-  def extract_data({:ok, %XMLRPC.MethodResponse{param: [return_code | body]}}) do
+  def extract_data({:ok, %XMLRPC.MethodResponse{param: [return_code | body]}}) when is_number(return_code) do
     {:ok, [return_code, body]}
+  end
+
+  def extract_data({:ok, %XMLRPC.MethodResponse{param: body}}) do
+    {:ok, [0, body]}
   end
 
   def extract_data({:ok, error}), do: {:error, error}
