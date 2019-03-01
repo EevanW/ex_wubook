@@ -5,6 +5,8 @@ defmodule ExWubook.Query do
   alias ExWubook.Error
   require Logger
 
+  @api_endpoint "https://wired.wubook.net/xrws/"
+
   @doc """
   Make query to API endpoint
   """
@@ -34,7 +36,7 @@ defmodule ExWubook.Query do
   def send_query({:ok, request_body}) do
     Logger.info("[ExWubook] REQUEST BODY: #{request_body}")
     HTTPoison.post(
-      Application.get_env(:ex_wubook, :api_endpoint),
+      @api_endpoint,
       request_body
     )
   end
