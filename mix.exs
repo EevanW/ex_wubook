@@ -6,8 +6,13 @@ defmodule ExWubook.MixProject do
       app: :ex_wubook,
       version: "0.1.0",
       elixir: "~> 1.7",
+      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      description: description(),
+      package: package(),
+      deps: deps(),
+      name: "ExWubook",
+      source_url: "https://github.com/ChannexIO/ex_wubook"
     ]
   end
 
@@ -21,6 +26,19 @@ defmodule ExWubook.MixProject do
     [
       {:xmlrpc, "~> 1.3"},
       {:httpoison, "~> 1.4"}
+    ]
+  end
+
+  defp description() do
+    "Wubook API Extension for Elixir"
+  end
+
+  defp package() do
+    [
+      name: "ex_wubook",
+      files: ~w(lib config .formatter.exs mix.exs README.md LICENSE),
+      licenses: ["Apache 2.0"],
+      links: %{"GitHub" => "https://github.com/ChannexIO/ex_wubook"}
     ]
   end
 end
