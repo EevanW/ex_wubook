@@ -37,6 +37,7 @@ defmodule ExWubook.MixProject do
     [
       name: "ex_wubook",
       files: ~w(lib config .formatter.exs mix.exs README.md LICENSE),
+      maintainers: ["Andrew Judis Yudin"],
       licenses: ["Apache 2.0"],
       links: %{"GitHub" => "https://github.com/ChannexIO/ex_wubook"}
     ]
