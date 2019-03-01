@@ -19,7 +19,7 @@ end
 
 ```elixir
 def fetch_rooms do
-  with {:ok, token} <- ExWubook.new(user: "USER", password: "PASSWORD", lcode: LCODE, provider_key: "PROVIDER_KEY") do
+  with {:ok, token} <- ExWubook.acquire_token("USER", "PASSWORD", LCODE, "PROVIDER_KEY") do
     ExWubook.fetch_rooms(token)
   end
 end
