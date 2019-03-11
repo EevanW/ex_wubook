@@ -13,7 +13,7 @@ defmodule ExWubook.Availability do
       @spec update_avail(%Token{}, Date.t(), list()) :: {:ok, nil} | {:error, any()}
       def update_avail(%Token{token: token, lcode: lcode}, dfrom, rooms) do
         # rooms: [%{id: 362671, days: [%{avail: 1}]}]
-        with {:ok, _} <- Query.send("update_avail", [token, lcode, dfrom, rooms]) do
+        with {:ok, _} <- Query.send("update_avail", [token, lcode, date_format(dfrom), rooms]) do
           {:ok, nil}
         end
       end
@@ -51,9 +51,16 @@ defmodule ExWubook.Availability do
       """
       @spec fetch_rooms_values(%Token{}, Date.t(), Date.t(), list()) :: {:ok, map()} | {:error, any()}
       def fetch_rooms_values(%Token{token: token, lcode: lcode}, dfrom, dto, rooms \\ []) do
-        with {:ok, [response]} <- Query.send("fetch_rooms_values", [token, lcode, dfrom, dto, rooms]) do
+        with {:ok, [response]} <- Query.send("fetch_rooms_values", [token, lcode, date_format(dfrom), date_format(dto), rooms]) do
           {:ok, response}
         end
+      end
+
+      defp date_format(date) do
+        [date.day, date.month, date.year]
+        |> Enum.map(&to_string/1)
+        |> Enum.map(&String.pad_leading(&1, 2, "0"))
+        |> Enum.join("/")
       end
     end
   end
