@@ -11,7 +11,7 @@ defmodule ExWubook.Authentication do
       Get new token from Wubook
       """
       @spec acquire_token(String.t(), String.t(), String.t(), integer()) ::
-              {:ok, %{token: %Token{}}} | {:error, any()}
+              {:ok, %Token{}} | {:error, any()}
       def acquire_token(user, password, provider_key, lcode) do
         with {:ok, [token]} <- Query.send("acquire_token", [user, password, provider_key]) do
           {:ok,
