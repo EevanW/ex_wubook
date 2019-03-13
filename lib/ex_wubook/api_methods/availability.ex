@@ -4,6 +4,7 @@ defmodule ExWubook.Availability do
   """
   alias ExWubook.Token
   alias ExWubook.Query
+  alias ExWubook.Meta
   import ExWubook.Date, only: [date_format: 1]
 
   defmacro __using__(_) do
@@ -11,18 +12,18 @@ defmodule ExWubook.Availability do
       @doc """
       Update Availability Range
       """
-      @spec update_avail(%Token{}, Date.t(), list()) :: {:ok, nil, String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec update_avail(%Token{}, Date.t(), list()) :: {:ok, nil, %Meta{}} | {:error, any(), %Meta{}}
       def update_avail(%Token{token: token, lcode: lcode}, dfrom, rooms) do
         # rooms: [%{id: 362671, days: [%{avail: 1}]}]
-        with {:ok, _, q, a} <- Query.send("update_avail", [token, lcode, date_format(dfrom), rooms]) do
-          {:ok, nil, q, a}
+        with {:ok, _, meta} <- Query.send("update_avail", [token, lcode, date_format(dfrom), rooms]) do
+          {:ok, nil, meta}
         end
       end
 
       @doc """
       Update Sparse Availability
       """
-      @spec update_sparse_avail(%Token{}, list()) :: {:ok, nil, String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec update_sparse_avail(%Token{}, list()) :: {:ok, nil, %Meta{}} | {:error, any(), %Meta{}}
       def update_sparse_avail(%Token{token: token, lcode: lcode}, rooms) do
         # rooms:
         # [{
@@ -43,18 +44,18 @@ defmodule ExWubook.Availability do
         #   ]
         # }]
         rooms = rooms |> Enum.map(fn el -> Map.put(el, :date, date_format(el.date)) end)
-        with {:ok, _, q, a} <- Query.send("update_sparse_avail", [token, lcode, rooms]) do
-          {:ok, nil, q, a}
+        with {:ok, _, meta} <- Query.send("update_sparse_avail", [token, lcode, rooms]) do
+          {:ok, nil, meta}
         end
       end
 
       @doc """
       Fetch room values
       """
-      @spec fetch_rooms_values(%Token{}, Date.t(), Date.t(), list()) :: {:ok, map(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec fetch_rooms_values(%Token{}, Date.t(), Date.t(), list()) :: {:ok, map(), %Meta{}} | {:error, any(), %Meta{}}
       def fetch_rooms_values(%Token{token: token, lcode: lcode}, dfrom, dto, rooms \\ []) do
-        with {:ok, [response], q, a} <- Query.send("fetch_rooms_values", [token, lcode, date_format(dfrom), date_format(dto), rooms]) do
-          {:ok, response, q, a}
+        with {:ok, [response], meta} <- Query.send("fetch_rooms_values", [token, lcode, date_format(dfrom), date_format(dto), rooms]) do
+          {:ok, response, meta}
         end
       end
     end

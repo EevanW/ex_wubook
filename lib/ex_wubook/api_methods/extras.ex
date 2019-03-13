@@ -4,20 +4,21 @@ defmodule ExWubook.Extras do
   """
   alias ExWubook.Token
   alias ExWubook.Query
+  alias ExWubook.Meta
   import ExWubook.Date, only: [date_format: 1]
 
   defmacro __using__(_) do
     quote do
-      @spec fetch_opportunities(%Token{}, any(), any(), any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec fetch_opportunities(%Token{}, any(), any(), any()) :: {:ok, any(), %Meta{}} | {:error, any(), %Meta{}}
       def fetch_opportunities(%Token{token: token, lcode: lcode}, dfrom \\ nil, dto \\ nil, ancillary \\ 0) do
-        with {:ok, [response], q, a} <- Query.send("fetch_opportunities", [token, lcode, date_format(dfrom), date_format(dto), ancillary]) do
-          {:ok, response, q, a}
+        with {:ok, [response], meta} <- Query.send("fetch_opportunities", [token, lcode, date_format(dfrom), date_format(dto), ancillary]) do
+          {:ok, response, meta}
         end
       end
 
-      @spec new_opportunity(%Token{}, any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec new_opportunity(%Token{}, any()) :: {:ok, any(), %Meta{}} | {:error, any(), %Meta{}}
       def new_opportunity(%Token{token: token, lcode: lcode}, args) do
-        with {:ok, [response], q, a} <-
+        with {:ok, [response], meta} <-
           Query.send("new_opportunity", [
             token,
             lcode,
@@ -35,13 +36,13 @@ defmodule ExWubook.Extras do
             args[:names] || nil,
             args[:descrs] || nil
           ]) do
-          {:ok, response, q, a}
+          {:ok, response, meta}
         end
       end
 
-      @spec mod_opportunity(%Token{}, any(), any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec mod_opportunity(%Token{}, any(), any()) :: {:ok, any(), %Meta{}} | {:error, any(), %Meta{}}
       def mod_opportunity(%Token{token: token, lcode: lcode}, oid, args) do
-        with {:ok, [response], q, a} <-
+        with {:ok, [response], meta} <-
           Query.send("new_opportunity", [
             token,
             lcode,
@@ -59,27 +60,27 @@ defmodule ExWubook.Extras do
             args[:names] || nil,
             args[:descrs] || nil
           ]) do
-          {:ok, response, q, a}
+          {:ok, response, meta}
         end
       end
 
-      @spec del_opportunity(%Token{}, any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec del_opportunity(%Token{}, any()) :: {:ok, any(), %Meta{}} | {:error, any(), %Meta{}}
       def del_opportunity(%Token{token: token, lcode: lcode}, oid) do
-        with {:ok, [response], q, a} <- Query.send("del_opportunity", [token, lcode, oid]) do
-          {:ok, response, q, a}
+        with {:ok, [response], meta} <- Query.send("del_opportunity", [token, lcode, oid]) do
+          {:ok, response, meta}
         end
       end
 
-      @spec fetch_soffers(%Token{}, any(), any(), any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec fetch_soffers(%Token{}, any(), any(), any()) :: {:ok, any(), %Meta{}} | {:error, any(), %Meta{}}
       def fetch_soffers(%Token{token: token, lcode: lcode}, drom \\ nil, dto \\ nil, ancillary \\ 0) do
-        with {:ok, [response], q, a} <- Query.send("fetch_soffers", [token, lcode, date_format(drom), date_format(dto), ancillary]) do
-          {:ok, response, q, a}
+        with {:ok, [response], meta} <- Query.send("fetch_soffers", [token, lcode, date_format(drom), date_format(dto), ancillary]) do
+          {:ok, response, meta}
         end
       end
 
-      @spec new_soffer(%Token{}, any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec new_soffer(%Token{}, any()) :: {:ok, any(), %Meta{}} | {:error, any(), %Meta{}}
       def new_soffer(%Token{token: token, lcode: lcode}, args) do
-        with {:ok, [response], q, a} <-
+        with {:ok, [response], meta} <-
           Query.send("new_opportunity", [
             token,
             lcode,
@@ -110,13 +111,13 @@ defmodule ExWubook.Extras do
             args[:descrs] || nil,
             args[:rplan] || nil
           ]) do
-          {:ok, response, q, a}
+          {:ok, response, meta}
         end
       end
 
-      @spec mod_soffer(%Token{}, any(), any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec mod_soffer(%Token{}, any(), any()) :: {:ok, any(), %Meta{}} | {:error, any(), %Meta{}}
       def mod_soffer(%Token{token: token, lcode: lcode}, sid, args) do
-        with {:ok, [response], q, a} <-
+        with {:ok, [response], meta} <-
           Query.send("new_opportunity", [
             token,
             lcode,
@@ -147,14 +148,14 @@ defmodule ExWubook.Extras do
             args[:descrs] || nil,
             args[:rplan] || nil
           ]) do
-          {:ok, response, q, a}
+          {:ok, response, meta}
         end
       end
 
-      @spec del_soffer(%Token{}, any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
+      @spec del_soffer(%Token{}, any()) :: {:ok, any(), %Meta{}} | {:error, any(), %Meta{}}
       def del_soffer(%Token{token: token, lcode: lcode}, sid) do
-        with {:ok, [response], q, a} <- Query.send("del_soffer", [token, lcode, sid]) do
-          {:ok, response, q, a}
+        with {:ok, [response], meta} <- Query.send("del_soffer", [token, lcode, sid]) do
+          {:ok, response, meta}
         end
       end
     end

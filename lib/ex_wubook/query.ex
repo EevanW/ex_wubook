@@ -3,16 +3,19 @@ defmodule ExWubook.Query do
   API Query module
   """
   alias ExWubook.Error
+  alias ExWubook.Meta
 
   @api_endpoint "https://wired.wubook.net/xrws/"
 
   @doc """
   Make query to API endpoint
   """
-  @spec send(String.t(), list) :: {:ok, list, String.t(), String.t()} | {:error, any()}
+  @spec send(String.t(), list) :: {:ok, list, %Meta{}} | {:error, any(), %Meta{}}
   def send(method_name, params) do
     %{
       request: %XMLRPC.MethodCall{method_name: method_name, params: params},
+      method: method_name,
+      started_at: DateTime.utc_now(),
       success: true,
       errors: []
     }
@@ -46,6 +49,7 @@ defmodule ExWubook.Query do
     with {:ok, response} <- HTTPoison.post(@api_endpoint, encoded_request) do
       payload
       |> Map.put(:response, response)
+      |> Map.put(:finished_at, DateTime.utc_now())
     else
       {:error, error} ->
         payload
@@ -132,6 +136,16 @@ defmodule ExWubook.Query do
         _ -> nil
       end
 
-    {code, data, raw_request, raw_response}
+    {
+      code,
+      data,
+      %Meta{
+        request: raw_request,
+        response: raw_response,
+        method: Map.get(payload, :method),
+        started_at: Map.get(payload, :started_at),
+        finished_at: Map.get(payload, :finished_at) || DateTime.utc_now()
+      }
+    }
   end
 end
