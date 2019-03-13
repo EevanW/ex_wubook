@@ -4,6 +4,7 @@ defmodule ExWubook.Availability do
   """
   alias ExWubook.Token
   alias ExWubook.Query
+  import ExWubook.Date, only: [date_format: 1]
 
   defmacro __using__(_) do
     quote do
@@ -41,6 +42,7 @@ defmodule ExWubook.Availability do
         #     }
         #   ]
         # }]
+        rooms = rooms |> Enum.map(fn el -> Map.put(el, :date, date_format(el.date)) end)
         with {:ok, _, q, a} <- Query.send("update_sparse_avail", [token, lcode, rooms]) do
           {:ok, nil, q, a}
         end
@@ -54,13 +56,6 @@ defmodule ExWubook.Availability do
         with {:ok, [response], q, a} <- Query.send("fetch_rooms_values", [token, lcode, date_format(dfrom), date_format(dto), rooms]) do
           {:ok, response, q, a}
         end
-      end
-
-      defp date_format(date) do
-        [date.day, date.month, date.year]
-        |> Enum.map(&to_string/1)
-        |> Enum.map(&String.pad_leading(&1, 2, "0"))
-        |> Enum.join("/")
       end
     end
   end

@@ -4,6 +4,7 @@ defmodule ExWubook.Restrictions do
   """
   alias ExWubook.Token
   alias ExWubook.Query
+  import ExWubook.Date, only: [date_format: 1]
 
   defmacro __using__(_) do
     quote do
@@ -64,7 +65,7 @@ defmodule ExWubook.Restrictions do
       """
       @spec rplan_update_rplan_values(%Token{}, integer(), Date.t(), map()) :: {:ok, nil, String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def rplan_update_rplan_values(%Token{token: token, lcode: lcode}, rpid, dfrom, values) do
-        with {:ok, _, q, a} <- Query.send("rplan_update_rplan_values", [token, lcode, rpid, dfrom, values]) do
+        with {:ok, _, q, a} <- Query.send("rplan_update_rplan_values", [token, lcode, rpid, date_format(dfrom), values]) do
           {:ok, nil, q, a}
         end
       end
@@ -74,7 +75,7 @@ defmodule ExWubook.Restrictions do
       """
       @spec rplan_get_rplan_values(%Token{}, Date.t(), Date.t(), list() | nil) :: {:ok, map(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def rplan_get_rplan_values(%Token{token: token, lcode: lcode}, dfrom, dto, rpids \\ []) do
-        with {:ok, [values], q, a} <- Query.send("rplan_get_rplan_values", [token, lcode, dfrom, dto, rpids]) do
+        with {:ok, [values], q, a} <- Query.send("rplan_get_rplan_values", [token, lcode, date_format(dfrom), date_format(dto), rpids]) do
           {:ok, values, q, a}
         end
       end

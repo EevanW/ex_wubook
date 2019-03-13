@@ -4,6 +4,7 @@ defmodule ExWubook.Channels do
   """
   alias ExWubook.Token
   alias ExWubook.Query
+  import ExWubook.Date, only: [date_format: 1]
 
   defmacro __using__(_) do
     quote do
@@ -93,7 +94,7 @@ defmodule ExWubook.Channels do
 
       @spec bcom_read_allotments(%Token{}, any(), any(), any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def bcom_read_allotments(%Token{token: token, lcode: lcode}, chid, dfrom, days) do
-        with {:ok, [result], q, a} <- Query.send("bcom_read_allotments", [token, lcode, chid, dfrom, days]) do
+        with {:ok, [result], q, a} <- Query.send("bcom_read_allotments", [token, lcode, chid, date_format(dfrom), days]) do
           {:ok, result, q, a}
         end
       end

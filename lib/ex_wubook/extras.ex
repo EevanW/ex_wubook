@@ -4,12 +4,13 @@ defmodule ExWubook.Extras do
   """
   alias ExWubook.Token
   alias ExWubook.Query
+  import ExWubook.Date, only: [date_format: 1]
 
   defmacro __using__(_) do
     quote do
       @spec fetch_opportunities(%Token{}, any(), any(), any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def fetch_opportunities(%Token{token: token, lcode: lcode}, dfrom \\ nil, dto \\ nil, ancillary \\ 0) do
-        with {:ok, [response], q, a} <- Query.send("fetch_opportunities", [token, lcode, dfrom, dto, ancillary]) do
+        with {:ok, [response], q, a} <- Query.send("fetch_opportunities", [token, lcode, date_format(dfrom), date_format(dto), ancillary]) do
           {:ok, response, q, a}
         end
       end
@@ -27,7 +28,7 @@ defmodule ExWubook.Extras do
             args[:extra] || nil,
             args[:price] || nil,
             args[:how] || nil,
-            args[:dfrom] || nil,
+            (if args[:dfrom], do: date_format(args[:dfrom]), else: nil),
             # Optional arguments
             args[:wdays] || nil,
             args[:rooms] || nil,
@@ -52,7 +53,7 @@ defmodule ExWubook.Extras do
             args[:extra] || nil,
             args[:price] || nil,
             args[:how] || nil,
-            args[:dfrom] || nil,
+            (if args[:dfrom], do: date_format(args[:dfrom]), else: nil),
             args[:wdays] || nil,
             args[:rooms] || nil,
             args[:names] || nil,
@@ -71,7 +72,7 @@ defmodule ExWubook.Extras do
 
       @spec fetch_soffers(%Token{}, any(), any(), any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def fetch_soffers(%Token{token: token, lcode: lcode}, drom \\ nil, dto \\ nil, ancillary \\ 0) do
-        with {:ok, [response], q, a} <- Query.send("fetch_soffers", [token, lcode, drom, dto, ancillary]) do
+        with {:ok, [response], q, a} <- Query.send("fetch_soffers", [token, lcode, date_format(drom), date_format(dto), ancillary]) do
           {:ok, response, q, a}
         end
       end
@@ -91,8 +92,8 @@ defmodule ExWubook.Extras do
             args[:apply_to] || nil,
             args[:guarantee] || nil,
             args[:deposit] || nil,
-            args[:dfrom] || nil,
-            args[:dto] || nil,
+            (if args[:dfrom], do: date_format(args[:dfrom]), else: nil),
+            (if args[:dto], do: date_format(args[:dto]), else: nil),
             args[:wdays] || nil,
             args[:wdays_type] || nil,
             args[:must_advance] || nil,
@@ -115,7 +116,6 @@ defmodule ExWubook.Extras do
 
       @spec mod_soffer(%Token{}, any(), any()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def mod_soffer(%Token{token: token, lcode: lcode}, sid, args) do
-        # mod_soffer(token, lcode, sid[, name= None, ddp= None, id_policy= None, dtype= None, dvalue= None, apply_to= None, guarantee= None, deposit= None, dfrom= None, dto= None, wdays= None, wdays_type= None, must_advance= None, max_advance= None, must_stay= None, max_stay= None, must_rooms= None, must_opps= None, must_type= None, nations= None, periods= None, names= {}, descrs= {}, rplan= None])
         with {:ok, [response], q, a} <-
           Query.send("new_opportunity", [
             token,
@@ -130,8 +130,8 @@ defmodule ExWubook.Extras do
             args[:apply_to] || nil,
             args[:guarantee] || nil,
             args[:deposit] || nil,
-            args[:dfrom] || nil,
-            args[:dto] || nil,
+            (if args[:dfrom], do: date_format(args[:dfrom]), else: nil),
+            (if args[:dto], do: date_format(args[:dto]), else: nil),
             args[:wdays] || nil,
             args[:wdays_type] || nil,
             args[:must_advance] || nil,

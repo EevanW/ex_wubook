@@ -4,6 +4,7 @@ defmodule ExWubook.Prices do
   """
   alias ExWubook.Token
   alias ExWubook.Query
+  import ExWubook.Date, only: [date_format: 1]
 
   defmacro __using__(_) do
     quote do
@@ -82,7 +83,7 @@ defmodule ExWubook.Prices do
       """
       @spec update_plan_prices(%Token{}, integer(), Date.t(), map()) :: {:ok, nil, String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def update_plan_prices(%Token{token: token, lcode: lcode}, pid, dfrom, prices) do
-        with {:ok, _, q, a} <- Query.send("update_plan_prices", [token, lcode, pid, dfrom, prices]) do
+        with {:ok, _, q, a} <- Query.send("update_plan_prices", [token, lcode, pid, date_format(dfrom), prices]) do
           {:ok, nil, q, a}
         end
       end
@@ -92,7 +93,7 @@ defmodule ExWubook.Prices do
       """
       @spec fetch_plan_prices(%Token{}, integer(), Date.t(), Date.t(), list()) :: {:ok, map(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def fetch_plan_prices(%Token{token: token, lcode: lcode}, pid, dfrom, dto, rooms \\ []) do
-        with {:ok, [prices], q, a} <- Query.send("fetch_plan_prices", [token, lcode, pid, dfrom, dto, rooms]) do
+        with {:ok, [prices], q, a} <- Query.send("fetch_plan_prices", [token, lcode, pid, date_format(dfrom), date_format(dto), rooms]) do
           {:ok, prices, q, a}
         end
       end

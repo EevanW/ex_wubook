@@ -4,6 +4,7 @@ defmodule ExWubook.Bookings do
   """
   alias ExWubook.Token
   alias ExWubook.Query
+  import ExWubook.Date, only: [date_format: 1]
 
   defmacro __using__(_) do
     quote do
@@ -61,7 +62,7 @@ defmodule ExWubook.Bookings do
             ancillary \\ 1
           ) do
         with {:ok, [bookings], q, a} <-
-               Query.send("fetch_bookings", [token, lcode, dfrom, dto, on_created, ancillary]) do
+               Query.send("fetch_bookings", [token, lcode, date_format(dfrom), date_format(dto), on_created, ancillary]) do
           {:ok, bookings, q, a}
         end
       end
@@ -73,7 +74,7 @@ defmodule ExWubook.Bookings do
               {:ok, list(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def fetch_bookings_codes(%Token{token: token, lcode: lcode}, dfrom, dto, on_created \\ 1) do
         with {:ok, [codes], q, a} <-
-               Query.send("fetch_bookings_codes", [token, lcode, dfrom, dto, on_created]) do
+               Query.send("fetch_bookings_codes", [token, lcode, date_format(dfrom), date_format(dto), on_created]) do
           {:ok, [codes], q, a}
         end
       end
@@ -121,8 +122,8 @@ defmodule ExWubook.Bookings do
                  token,
                  lcode,
                  # Required arguments
-                 args[:dfrom] || nil,
-                 args[:dto] || nil,
+                 (if args[:dfrom], do: date_format(args[:dfrom]), else: nil),
+                 (if args[:dto], do: date_format(args[:dto]), else: nil),
                  args[:rooms] || nil,
                  args[:customer] || nil,
                  args[:amount] || 0,

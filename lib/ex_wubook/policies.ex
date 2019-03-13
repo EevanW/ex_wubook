@@ -4,6 +4,7 @@ defmodule ExWubook.Policies do
   """
   alias ExWubook.Token
   alias ExWubook.Query
+  import ExWubook.Date, only: [date_format: 1]
 
   defmacro __using__(_) do
     quote do
@@ -62,14 +63,14 @@ defmodule ExWubook.Policies do
 
       @spec fetch_policy_calendar(%Token{}, Date.t(), Date.t()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def fetch_policy_calendar(%Token{token: token, lcode: lcode}, dfrom, dto) do
-        with {:ok, [response], q, a} <- Query.send("fetch_policy_calendar", [token, lcode, dfrom, dto]) do
+        with {:ok, [response], q, a} <- Query.send("fetch_policy_calendar", [token, lcode, date_format(dfrom), date_format(dto)]) do
           {:ok, response, q, a}
         end
       end
 
       @spec set_policy_calendar(%Token{}, integer(), Date.t(), Date.t()) :: {:ok, any(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def set_policy_calendar(%Token{token: token, lcode: lcode}, pid, dfrom, dto) do
-        with {:ok, [response], q, a} <- Query.send("set_policy_calendar", [token, lcode, pid, dfrom, dto]) do
+        with {:ok, [response], q, a} <- Query.send("set_policy_calendar", [token, lcode, pid, date_format(dfrom), date_format(dto)]) do
           {:ok, response, q, a}
         end
       end
