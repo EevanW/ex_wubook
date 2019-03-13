@@ -3,79 +3,135 @@ defmodule ExWubook.Query do
   API Query module
   """
   alias ExWubook.Error
-  require Logger
 
   @api_endpoint "https://wired.wubook.net/xrws/"
 
   @doc """
   Make query to API endpoint
   """
-  @spec send(String.t(), list) :: {:ok, list} | {:error, any()}
+  @spec send(String.t(), list) :: {:ok, list, String.t(), String.t()} | {:error, any()}
   def send(method_name, params) do
-    Logger.info("[ExWubook] API CALL TO: #{method_name}")
-    %XMLRPC.MethodCall{method_name: method_name, params: params}
+    %{
+      request: %XMLRPC.MethodCall{method_name: method_name, params: params},
+      success: true,
+      errors: []
+    }
     |> encode_request()
     |> send_query()
     |> decode_response()
     |> extract_data()
     |> validate_response()
+    |> format_answer()
   end
 
   @doc """
   Encode request from XMLRPC to plan XML String
   """
-  @spec encode_request(XMLRPC.t()) ::
-          {:ok, iodata()} | {:ok, String.t()} | {:error, {any(), String.t()}}
-  def encode_request(payload) do
-    XMLRPC.encode(payload)
+  def encode_request(%{request: request} = payload) do
+    with {:ok, encoded_request} <- XMLRPC.encode(request) do
+      payload
+      |> Map.put(:encoded_request, encoded_request)
+    else
+      {:error, error} ->
+        payload
+        |> Map.put(:success, false)
+        |> Map.put(:error, error)
+    end
   end
 
   @doc """
   Send query to target API endpoint
   """
-  def send_query({:ok, request_body}) do
-    Logger.info("[ExWubook] REQUEST BODY: #{request_body}")
-    HTTPoison.post(
-      @api_endpoint,
-      request_body
-    )
+  def send_query(%{success: true, encoded_request: encoded_request} = payload) do
+    with {:ok, response} <- HTTPoison.post(@api_endpoint, encoded_request) do
+      payload
+      |> Map.put(:response, response)
+    else
+      {:error, error} ->
+        payload
+        |> Map.put(:success, false)
+        |> Map.put(:error, error)
+    end
   end
 
-  def send_query({:error, _} = payload), do: payload
+  def send_query(payload), do: payload
 
   @doc """
   Decode query result
   """
-  def decode_response({:ok, %{status_code: 200, body: body}}) do
-    Logger.info("[ExWubook] ANSWER BODY: #{body}")
-    XMLRPC.decode(body)
+  def decode_response(%{success: true, response: %{status_code: 200, body: body}} = payload) do
+    with {:ok, decoded_response} <- XMLRPC.decode(body) do
+      payload
+      |> Map.put(:decoded_response, decoded_response)
+    else
+      {:error, error} ->
+        payload
+        |> Map.put(:success, false)
+        |> Map.put(:error, error)
+    end
   end
 
-  def decode_response({:ok, _}), do: {:error, :invalid_response_code}
-  def decode_response({:error, _} = payload), do: payload
+  def decode_response(%{success: true} = payload) do
+    payload
+    |> Map.put(:success, false)
+    |> Map.put(:error, :invalid_response_code)
+  end
+
+  def decode_response(payload), do: payload
 
   @doc """
   Extract response arguments from XMLRPC structure
   """
-  def extract_data({:ok, %XMLRPC.MethodResponse{param: [return_code | body]}}) when is_number(return_code) do
-    {:ok, [return_code, body]}
+  def extract_data(
+        %{success: true, decoded_response: %XMLRPC.MethodResponse{param: [return_code | body]}} =
+          payload
+      )
+      when is_number(return_code) do
+    payload
+    |> Map.put(:raw_answer, [return_code, body])
   end
 
-  def extract_data({:ok, %XMLRPC.MethodResponse{param: body}}) do
-    {:ok, [0, body]}
+  def extract_data(
+        %{success: true, decoded_response: %XMLRPC.MethodResponse{param: body}} = payload
+      ) do
+    payload
+    |> Map.put(:raw_answer, [0, body])
   end
 
-  def extract_data({:ok, error}), do: {:error, error}
-  def extract_data({:error, _} = payload), do: payload
+  def extract_data(payload), do: payload
 
   @doc """
   Validate response data
   """
-  def validate_response({:ok, [0, body]}) do
-    {:ok, body}
+  def validate_response(%{success: true, raw_answer: [0, body]} = payload) do
+    Map.put(payload, :answer, {:ok, body})
   end
 
-  def validate_response({:ok, [error_code, _body]}), do: {:error, Error.exception(error_code)}
-  def validate_response({:ok, _}), do: {:error, :undefined_error}
-  def validate_response({:error, _} = payload), do: payload
+  def validate_response(%{success: true, raw_answer: [error_code, _body]} = payload) do
+    Map.put(payload, :answer, {:error, Error.exception(error_code)})
+  end
+
+  def validate_response(%{success: true, raw_answer: _} = payload) do
+    Map.put(payload, :answer, {:error, :undefined_error})
+  end
+
+  def validate_response(%{success: false, error: error} = payload) do
+    Map.put(payload, :answer, {:error, error})
+  end
+
+  @doc """
+  Format answer
+  """
+  def format_answer(%{answer: {code, data}} = payload) do
+    raw_request = Map.get(payload, :encoded_request)
+
+    raw_response =
+      case Map.fetch(payload, :response) do
+        :error -> nil
+        {:ok, %{body: body}} -> body
+        _ -> nil
+      end
+
+    {code, data, raw_request, raw_response}
+  end
 end

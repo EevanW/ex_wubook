@@ -10,18 +10,18 @@ defmodule ExWubook.Availability do
       @doc """
       Update Availability Range
       """
-      @spec update_avail(%Token{}, Date.t(), list()) :: {:ok, nil} | {:error, any()}
+      @spec update_avail(%Token{}, Date.t(), list()) :: {:ok, nil, String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def update_avail(%Token{token: token, lcode: lcode}, dfrom, rooms) do
         # rooms: [%{id: 362671, days: [%{avail: 1}]}]
-        with {:ok, _} <- Query.send("update_avail", [token, lcode, date_format(dfrom), rooms]) do
-          {:ok, nil}
+        with {:ok, _, q, a} <- Query.send("update_avail", [token, lcode, date_format(dfrom), rooms]) do
+          {:ok, nil, q, a}
         end
       end
 
       @doc """
       Update Sparse Availability
       """
-      @spec update_sparse_avail(%Token{}, list()) :: {:ok, nil} | {:error, any()}
+      @spec update_sparse_avail(%Token{}, list()) :: {:ok, nil, String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def update_sparse_avail(%Token{token: token, lcode: lcode}, rooms) do
         # rooms:
         # [{
@@ -41,18 +41,18 @@ defmodule ExWubook.Availability do
         #     }
         #   ]
         # }]
-        with {:ok, _} <- Query.send("update_sparse_avail", [token, lcode, rooms]) do
-          {:ok, nil}
+        with {:ok, _, q, a} <- Query.send("update_sparse_avail", [token, lcode, rooms]) do
+          {:ok, nil, q, a}
         end
       end
 
       @doc """
       Fetch room values
       """
-      @spec fetch_rooms_values(%Token{}, Date.t(), Date.t(), list()) :: {:ok, map()} | {:error, any()}
+      @spec fetch_rooms_values(%Token{}, Date.t(), Date.t(), list()) :: {:ok, map(), String.t(), String.t()} | {:error, any(), String.t(), String.t()}
       def fetch_rooms_values(%Token{token: token, lcode: lcode}, dfrom, dto, rooms \\ []) do
-        with {:ok, [response]} <- Query.send("fetch_rooms_values", [token, lcode, date_format(dfrom), date_format(dto), rooms]) do
-          {:ok, response}
+        with {:ok, [response], q, a} <- Query.send("fetch_rooms_values", [token, lcode, date_format(dfrom), date_format(dto), rooms]) do
+          {:ok, response, q, a}
         end
       end
 
