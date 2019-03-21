@@ -30,6 +30,7 @@ defmodule ExWubook.Error do
   def reason_for(-14), do: :wrong_number_of_days
   def reason_for(-15), do: :plan_in_use
   def reason_for(-19), do: :past_date
+  def reason_for(-21), do: :flood_protection_activated
   def reason_for(-100), do: :invalid_input
   def reason_for(-101), do: :malformed_dates_or_restrictions
   def reason_for(-1000), do: :invalid_lodging_code
@@ -40,6 +41,7 @@ defmodule ExWubook.Error do
   def reason_for(-1005), do: :invalid_credit_card_data
   def reason_for(-1006), do: :invalid_data
   def reason_for(-1007), do: :no_room_was_requested
+  def reason_for(_), do: :undefined_error
 
   @doc """
   Convert reason atom to human readable string
