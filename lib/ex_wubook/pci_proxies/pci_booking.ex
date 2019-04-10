@@ -11,8 +11,8 @@ defmodule ExWubook.PCIProxies.PCIBooking do
     256 => :maestro
   }
 
-  def fetch_card_info(token, booking_code, cc_password, api_key) do
-    with %{user: user, password: password, provider_key: provider_key, lcode: lcode} <- token,
+  def fetch_card_info(token, booking_code, api_key) do
+    with %{user: user, password: password, provider_key: provider_key, lcode: lcode, cc_password: cc_password} <- token,
          {:ok, access_token} <- get_token(user, password, provider_key, api_key),
          response <- get_card_token(access_token, lcode, booking_code, cc_password, api_key) do
       response

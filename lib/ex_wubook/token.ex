@@ -3,5 +3,6 @@ defmodule ExWubook.Token do
             password: nil,
             provider_key: nil,
             lcode: nil,
-            token: nil
+            token: nil,
+            cc_password: nil
 end
