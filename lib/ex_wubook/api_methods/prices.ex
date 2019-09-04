@@ -2,7 +2,6 @@ defmodule ExWubook.Prices do
   @moduledoc """
   API Methods for Availability operations
   """
-  alias ExWubook.FormattedFloat
   alias ExWubook.Token
   alias ExWubook.Query
   alias ExWubook.Meta
@@ -76,20 +75,6 @@ defmodule ExWubook.Prices do
       @spec mod_vplans(%Token{}, list()) :: {:ok, nil, %Meta{}} | {:error, any(), %Meta{}}
       def mod_vplans(%Token{token: token, lcode: lcode}, plans) do
         with {:ok, _, meta} <- Query.send("mod_vplans", [token, lcode, plans]) do
-          {:ok, nil, meta}
-        end
-      end
-
-      @doc """
-      Update Pricing plan prices
-      """
-      @spec update_plan_prices(%Token{}, integer(), Date.t(), map(), integer()) :: {:ok, nil, %Meta{}} | {:error, any(), %Meta{}}
-      def update_plan_prices(%Token{token: token, lcode: lcode}, pid, dfrom, prices, exponent) do
-        with formatted_prices <- prices
-                                 |> Map.keys()
-                                 |> Enum.reduce(%{}, &Map.put(&2, &1, FormattedFloat.convert(prices[&1], exponent))),
-             {:ok, _, meta} <-
-               Query.send("update_plan_prices", [token, lcode, pid, date_format(dfrom), formatted_prices]) do
           {:ok, nil, meta}
         end
       end
