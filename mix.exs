@@ -4,7 +4,7 @@ defmodule ExWubook.MixProject do
   def project do
     [
       app: :ex_wubook,
-      version: "0.2.3",
+      version: "0.2.4",
       elixir: "~> 1.7",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
