@@ -1,5 +1,6 @@
 %{
   "certifi": {:hex, :certifi, "2.4.2", "75424ff0f3baaccfd34b1214184b6ef616d89e420b258bb0a5ea7d7bc628f7f0", [], [{:parse_trans, "~>3.3", [hex: :parse_trans, repo: "hexpm", optional: false]}], "hexpm"},
+  "decimal": {:hex, :decimal, "1.8.0", "ca462e0d885f09a1c5a342dbd7c1dcf27ea63548c65a65e67334f4b61803822e", [:mix], [], "hexpm"},
   "earmark": {:hex, :earmark, "1.3.1", "73812f447f7a42358d3ba79283cfa3075a7580a3a2ed457616d6517ac3738cb9", [], [], "hexpm"},
   "erlsom": {:hex, :erlsom, "1.5.0", "c5a5cdd0ee0e8dca62bcc4b13ff08da24fdefc16ccd8b25282a2fda2ba1be24a", [], [], "hexpm"},
   "ex_doc": {:hex, :ex_doc, "0.19.3", "3c7b0f02851f5fc13b040e8e925051452e41248f685e40250d7e40b07b9f8c10", [], [{:earmark, "~> 1.2", [hex: :earmark, repo: "hexpm", optional: false]}, {:makeup_elixir, "~> 0.10", [hex: :makeup_elixir, repo: "hexpm", optional: false]}], "hexpm"},
@@ -14,5 +15,5 @@
   "parse_trans": {:hex, :parse_trans, "3.3.0", "09765507a3c7590a784615cfd421d101aec25098d50b89d7aa1d66646bc571c1", [:rebar3], [], "hexpm"},
   "ssl_verify_fun": {:hex, :ssl_verify_fun, "1.1.4", "f0eafff810d2041e93f915ef59899c923f4568f4585904d010387ed74988e77b", [:make, :mix, :rebar3], [], "hexpm"},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.4.1", "d869e4c68901dd9531385bb0c8c40444ebf624e60b6962d95952775cac5e90cd", [:rebar3], [], "hexpm"},
-  "xmlrpc": {:hex, :xmlrpc, "1.3.0", "78b14750f665e371c27c98d184a1d12347c85a2e3bdddad7b327ffc240e4200b", [], [{:erlsom, "~> 1.4", [hex: :erlsom, repo: "hexpm", optional: false]}], "hexpm"},
+  "xmlrpc": {:hex, :xmlrpc, "1.4.1", "e69711f5a15b297c6c27dd833726a6a0cf06bab9130ac6039b8031510a3af497", [:mix], [{:decimal, "~> 1.0", [hex: :decimal, repo: "hexpm", optional: false]}, {:erlsom, "~> 1.4", [hex: :erlsom, repo: "hexpm", optional: false]}], "hexpm"},
 }
