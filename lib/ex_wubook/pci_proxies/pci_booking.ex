@@ -54,6 +54,12 @@ defmodule ExWubook.PCIProxies.PCIBooking do
       {:ok, %XMLRPC.MethodResponse{param: [-17, "No CC for this reservation"]}} ->
         {:error, :no_cc_for_this_reservation}
 
+      {:ok, %XMLRPC.MethodResponse{param: [-100, "Invalid Input"]}} ->
+        {:error, :invalid_input}
+
+      {_, error} ->
+        {:error, error}
+
       error ->
         error
     end
