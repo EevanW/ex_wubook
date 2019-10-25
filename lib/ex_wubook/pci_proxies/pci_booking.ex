@@ -12,7 +12,13 @@ defmodule ExWubook.PCIProxies.PCIBooking do
   }
 
   def fetch_card_info(token, booking_code, api_key) do
-    with %{user: user, password: password, provider_key: provider_key, lcode: lcode, cc_password: cc_password} <- token,
+    with %{
+           user: user,
+           password: password,
+           provider_key: provider_key,
+           lcode: lcode,
+           cc_password: cc_password
+         } <- token,
          {:ok, access_token} <- get_token(user, password, provider_key, api_key),
          response <- get_card_token(access_token, lcode, booking_code, cc_password, api_key) do
       response
@@ -31,25 +37,29 @@ defmodule ExWubook.PCIProxies.PCIBooking do
     end
   end
 
-  defp get_card_token(token, lcode, booking_code, password, api_key) do
+  defp get_card_token(token, lcode, booking_code, password, api_key, without_cvv \\ false) do
     with {:ok, temp_session} <- start_temporary_session(api_key),
-         url <- get_card_token_url(temp_session),
+         url <- get_card_token_url(temp_session, without_cvv),
          body <- get_card_token_body(token, lcode, booking_code, password),
          {:ok, body, headers} <- send_request(url, body, api_key),
          {:ok, %{param: [0, card_data]}} <- XMLRPC.decode(body) do
-      {
-        :ok,
-        %{
-          cardholder_name: card_data["cc_owner"],
-          card_number: card_data["cc_number"],
-          expiration_date: card_data["cc_expiring"],
-          card_type: @card_types[card_data["cc_type"]],
-          cvv: card_data["cc_cvv"],
-          token: get_from(headers, "X-WUBOOKFETCHCC"),
-          errors: get_from(headers, "X-pciBooking-Tokenization-Errors"),
-          warnings: get_from(headers, "X-pciBooking-Tokenization-Warnings")
+      if get_from(headers, "X-pciBooking-Tokenization-Errors") == "Cvv must be 3 or 4 digits" do
+        get_card_token(token, lcode, booking_code, password, api_key, true)
+      else
+        {
+          :ok,
+          %{
+            cardholder_name: card_data["cc_owner"],
+            card_number: card_data["cc_number"],
+            expiration_date: card_data["cc_expiring"],
+            card_type: @card_types[card_data["cc_type"]],
+            cvv: card_data["cc_cvv"],
+            token: get_from(headers, "X-WUBOOKFETCHCC"),
+            errors: get_from(headers, "X-pciBooking-Tokenization-Errors"),
+            warnings: get_from(headers, "X-pciBooking-Tokenization-Warnings")
+          }
         }
-      }
+      end
     else
       {:ok, %XMLRPC.MethodResponse{param: [-17, "No CC for this reservation"]}} ->
         {:error, :no_cc_for_this_reservation}
@@ -99,11 +109,10 @@ defmodule ExWubook.PCIProxies.PCIBooking do
     """
   end
 
-  defp get_card_token_url(temp_session) do
+  defp get_card_token_url(temp_session, without_cvv) do
     get_url("/payments/paycard/capture",
       sessionToken: temp_session,
-      # without_cvv ? "WubookWOCVV" : "Wubook",
-      profileName: "Wubook",
+      profileName: if(without_cvv, do: "WubookWOCVV", else: "Wubook"),
       targetURI: "https://wired.wubook.net/xrws/",
       saveCVV: true
     )
