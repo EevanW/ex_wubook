@@ -178,7 +178,7 @@ defmodule ExWubook.PCIProxies.PCIBooking do
   defp headers(api_key) do
     [
       {"Authorization", "APIKEY #{api_key}"},
-      {"Chache-Control", "no-cache"}
+      {"Cache-Control", "no-cache"}
     ]
   end
 
