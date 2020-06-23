@@ -3,7 +3,7 @@ defmodule ExWubook.Query do
   API Query module
   """
 
-  use HTTPClient, adapter: :finch
+  use HTTPClient
 
   alias ExWubook.Error
   alias ExWubook.Meta
@@ -66,7 +66,7 @@ defmodule ExWubook.Query do
   @doc """
   Decode query result
   """
-  def decode_response(%{success: true, response: %{status_code: 200, body: body}} = payload) do
+  def decode_response(%{success: true, response: %{status: 200, body: body}} = payload) do
     with {:ok, decoded_response} <- XMLRPC.decode(body) do
       payload
       |> Map.put(:decoded_response, decoded_response)

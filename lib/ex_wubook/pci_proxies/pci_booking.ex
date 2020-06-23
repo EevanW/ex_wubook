@@ -1,5 +1,5 @@
 defmodule ExWubook.PCIProxies.PCIBooking do
-  use HTTPClient, adapter: :finch
+  use HTTPClient
 
   @api_endpoint "https://service.pcibooking.net/api"
   @card_types %{
@@ -158,7 +158,7 @@ defmodule ExWubook.PCIProxies.PCIBooking do
   end
 
   defp send_request(url, body, api_key) do
-    with {:ok, %{body: body, headers: headers, status_code: 200}} <-
+    with {:ok, %{body: body, headers: headers, status: 200}} <-
            post("#{@api_endpoint}#{url}", String.trim(body), headers(api_key), []) do
       {
         :ok,
@@ -166,7 +166,7 @@ defmodule ExWubook.PCIProxies.PCIBooking do
         headers
       }
     else
-      {:ok, %{status_code: 401}} ->
+      {:ok, %{status: 401}} ->
         {:error, :wrong_api_key}
 
       {:ok, response} ->
