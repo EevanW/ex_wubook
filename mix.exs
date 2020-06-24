@@ -18,14 +18,14 @@ defmodule ExWubook.MixProject do
 
   def application do
     [
-      applications: [:logger, :httpoison]
+      applications: [:logger]
     ]
   end
 
   defp deps do
     [
       {:xmlrpc, "~> 1.4"},
-      {:httpoison, "~> 1.4"},
+      {:http_client, github: "ChannexIO/http_client"},
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end

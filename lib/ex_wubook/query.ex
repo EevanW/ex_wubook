@@ -2,6 +2,9 @@ defmodule ExWubook.Query do
   @moduledoc """
   API Query module
   """
+
+  use HTTPClient, adapter: :finch
+
   alias ExWubook.Error
   alias ExWubook.Meta
 
@@ -46,7 +49,7 @@ defmodule ExWubook.Query do
   Send query to target API endpoint
   """
   def send_query(%{success: true, encoded_request: encoded_request} = payload) do
-    with {:ok, response} <- HTTPoison.post(@api_endpoint, encoded_request) do
+    with {:ok, response} <- post(@api_endpoint, encoded_request, [], []) do
       payload
       |> Map.put(:response, response)
       |> Map.put(:finished_at, DateTime.utc_now())
